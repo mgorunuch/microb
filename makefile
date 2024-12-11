@@ -9,7 +9,7 @@ RESET=[0m
 
 # -- BUILD_COMMANDS START --
 # Auto-generated build commands
-build-all: build_alienvault_passivedns build_binary_edge build_certspotter build_commoncrawl build_google_custom_search build_web_archive 
+build-all: build_alienvault_passivedns build_binary_edge build_certspotter build_commoncrawl build_crt_sh build_google_custom_search build_web_archive 
 
 
 build_alienvault_passivedns:
@@ -27,6 +27,10 @@ build_certspotter:
 build_commoncrawl:
 	@echo "$(BLUE)Building $(GREEN)commoncrawl$(RESET)"
 	@go build -o bin/commoncrawl app/commands/commoncrawl/main.go
+
+build_crt_sh:
+	@echo "$(BLUE)Building $(GREEN)crt_sh$(RESET)"
+	@go build -o bin/crt_sh app/commands/crt_sh/main.go
 
 build_google_custom_search:
 	@echo "$(BLUE)Building $(GREEN)google_custom_search$(RESET)"
