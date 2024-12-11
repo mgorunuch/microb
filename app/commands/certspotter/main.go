@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/engine/certspotter"
 	"log"
@@ -17,6 +16,18 @@ func processDomainLine(cacheProvider *core.FileCache[[]certspotter.Issuance]) fu
 		if err != nil {
 			// Log error instead of panic for better error handling
 			println("Error parsing hostname:", err.Error())
+			return
+		}
+
+		// Check if the domain is already cached
+		isCached, err := cacheProvider.HasCached(hostname)
+		if err != nil {
+			println("Error checking cache:", err.Error())
+			return
+		}
+
+		if isCached {
+			println("Domain already processed:", hostname)
 			return
 		}
 
@@ -38,13 +49,7 @@ func processDomainLine(cacheProvider *core.FileCache[[]certspotter.Issuance]) fu
 }
 
 func main() {
-	core.LoggerInit()
-
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	core.Init()
 
 	// Initialize the file cache provider for CertSpotter
 	cacheProvider := &core.FileCache[[]certspotter.Issuance]{

@@ -32,7 +32,6 @@ var logo = `
 ╚═╝     ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
 `
 
-var title = `..-. ..- -. -.. .. -. --. ... / -.-. ..- .-. ... . -..`
 var padding = 10
 
 func PrintLogo() {
@@ -55,12 +54,4 @@ func PrintLogo() {
 		}
 	}
 	fmt.Print(strings.Repeat("\n", 1))
-}
-
-func PadStringsToLength(length int, strs ...string) string {
-	var result string
-	for _, str := range strs {
-		result += str + strings.Repeat(" ", length-len(str))
-	}
-	return result
 }

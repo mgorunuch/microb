@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/engine/binary_edge"
 	"log"
@@ -28,6 +27,18 @@ func processDomainLine(cacheProvider *core.FileCache[binary_edge.BinaryEdgeRespo
 			return
 		}
 
+		// Check if the domain is already cached
+		isCached, err := cacheProvider.HasCached(hostname)
+		if err != nil {
+			println("Error checking cache:", err.Error())
+			return
+		}
+
+		if isCached {
+			println("Domain already processed:", hostname)
+			return
+		}
+
 		// Use the binary_edge package to get data
 		response, err := binary_edge.Run(binaryEdgeApiKey, hostname)
 		if err != nil {
@@ -46,13 +57,7 @@ func processDomainLine(cacheProvider *core.FileCache[binary_edge.BinaryEdgeRespo
 }
 
 func main() {
-	core.LoggerInit()
-
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	core.Init()
 
 	// Initialize the file cache provider for BinaryEdge
 	cacheProvider := &core.FileCache[binary_edge.BinaryEdgeResponse]{

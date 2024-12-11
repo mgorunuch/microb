@@ -17,6 +17,18 @@ func processDomainLine(cacheProvider *core.FileCache[alienvault_passivedns.Passi
 			return
 		}
 
+		// Check if the domain is already cached
+		isCached, err := cacheProvider.HasCached(hostname)
+		if err != nil {
+			println("Error checking cache:", err.Error())
+			return
+		}
+
+		if isCached {
+			println("Domain already processed:", hostname)
+			return
+		}
+
 		// Use the alienvault_passivedns package to get data
 		_, err = alienvault_passivedns.Get(cacheProvider, hostname)
 		if err != nil {
@@ -30,7 +42,7 @@ func processDomainLine(cacheProvider *core.FileCache[alienvault_passivedns.Passi
 }
 
 func main() {
-	core.LoggerInit()
+	core.Init()
 
 	// Initialize the file cache provider
 	cacheProvider := &core.FileCache[alienvault_passivedns.PassiveDnsResp]{

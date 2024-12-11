@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/engine/google_custom_search"
 	"log"
@@ -24,6 +23,18 @@ func processQueryLine(cacheProvider *core.FileCache[google_custom_search.GoogleC
 			return
 		}
 
+		// Check if the query is already cached
+		isCached, err := cacheProvider.HasCached(query)
+		if err != nil {
+			log.Println("Error checking cache:", err)
+			return
+		}
+
+		if isCached {
+			fmt.Println("Query already processed:", query)
+			return
+		}
+
 		// Use the google_custom_search package to get data
 		response, err := google_custom_search.Run(apiKey, searchEngineID, query)
 		if err != nil {
@@ -42,13 +53,7 @@ func processQueryLine(cacheProvider *core.FileCache[google_custom_search.GoogleC
 }
 
 func main() {
-	core.LoggerInit()
-
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	core.Init()
 
 	// Initialize the file cache provider
 	cacheProvider := &core.FileCache[google_custom_search.GoogleCustomSearchResponse]{

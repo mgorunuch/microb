@@ -28,3 +28,10 @@ func SpawnAllLines(ch chan string) {
 	})
 	close(ch)
 }
+
+func SpawnArrayElements[T any](ch chan T, arr []T) {
+	for _, el := range arr {
+		ch <- el
+	}
+	close(ch)
+}
