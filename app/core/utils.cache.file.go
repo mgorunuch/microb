@@ -9,6 +9,17 @@ import (
 	"time"
 )
 
+func NewDefaultFileCache[T any](service string, ttl time.Duration) *FileCache[T] {
+	return NewFileCache[T](filepath.Join("cache", service), ttl)
+}
+
+func NewFileCache[T any](dir string, expirationTTL time.Duration) *FileCache[T] {
+	return &FileCache[T]{
+		Dir:           dir,
+		ExpirationTTL: expirationTTL,
+	}
+}
+
 type FileCache[T any] struct {
 	Dir           string
 	ExpirationTTL time.Duration

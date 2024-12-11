@@ -4,12 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/mgorunuch/microb/app/core/zaputils"
 	"golang.org/x/term"
 	"os"
 	"strings"
 )
 
 var loggerQuietFlag = flag.Bool("quiet", false, "Disable logging")
+var Logger = zaputils.InitLogger().Sugar()
 
 func init() {
 	flag.Parse()

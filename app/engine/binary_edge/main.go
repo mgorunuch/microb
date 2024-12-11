@@ -3,9 +3,14 @@ package binary_edge
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mgorunuch/microb/app/core"
 	"net/http"
 	"net/url"
 )
+
+func BINARYEDGE_API_KEY() string {
+	return core.Env.Get("BINARYEDGE_API_KEY", true)
+}
 
 type BinaryEdgeResponse struct {
 	Query    string   `json:"query"`
@@ -15,30 +20,30 @@ type BinaryEdgeResponse struct {
 	Events   []string `json:"events"`
 }
 
-func Run(binaryEdgeApiKey string, domain string) (*BinaryEdgeResponse, error) {
+func Run(domain string) (res BinaryEdgeResponse, err error) {
 	baseURL := "https://api.binaryedge.io/v2/query/domains/subdomain"
 	requestURL := fmt.Sprintf("%s/%s", baseURL, url.PathEscape(domain))
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return res, fmt.Errorf("failed to create request: %w", err)
 	}
-	req.Header.Set("X-Key", binaryEdgeApiKey)
+	req.Header.Set("X-Key", BINARYEDGE_API_KEY())
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to make request: %w", err)
+		return res, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return res, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var searchResponse BinaryEdgeResponse
-	if err := json.NewDecoder(resp.Body).Decode(&searchResponse); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	err = json.NewDecoder(resp.Body).Decode(&res)
+	if err != nil {
+		return res, fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	return &searchResponse, nil
+	return res, nil
 }
