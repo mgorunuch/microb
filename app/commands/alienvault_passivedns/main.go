@@ -30,6 +30,8 @@ func processDomainLine(cacheProvider *core.FileCache[alienvault_passivedns.Passi
 }
 
 func main() {
+	core.LoggerInit()
+
 	// Initialize the file cache provider
 	cacheProvider := &core.FileCache[alienvault_passivedns.PassiveDnsResp]{
 		Dir:           filepath.Join("cache", "alienvault_passivedns"),

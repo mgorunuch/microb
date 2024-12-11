@@ -38,6 +38,8 @@ func processDomainLine(cacheProvider *core.FileCache[[]certspotter.Issuance]) fu
 }
 
 func main() {
+	core.LoggerInit()
+
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
