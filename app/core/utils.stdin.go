@@ -64,7 +64,7 @@ func ProcessLinesWithCache[T any](config Config[T]) {
 			return
 		}
 
-		response, err := config.RunFunc(v)
+		response, err := config.RunFunc(key)
 		if err != nil {
 			Logger.Errorf("Error running: %s", err.Error())
 			return

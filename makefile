@@ -9,7 +9,7 @@ RESET=[0m
 
 # -- BUILD_COMMANDS START --
 # Auto-generated build commands
-build-all: build_alienvault_passivedns build_binary_edge build_certspotter build_commoncrawl build_crt_sh build_google_custom_search build_web_archive 
+build-all: build_alienvault_passivedns build_binary_edge build_certspotter build_commoncrawl build_crt_sh build_google_custom_search build_neo4j_importer build_web_archive 
 
 
 build_alienvault_passivedns:
@@ -35,6 +35,10 @@ build_crt_sh:
 build_google_custom_search:
 	@echo "$(BLUE)Building $(GREEN)google_custom_search$(RESET)"
 	@go build -o bin/google_custom_search app/commands/google_custom_search/main.go
+
+build_neo4j_importer:
+	@echo "$(BLUE)Building $(GREEN)neo4j_importer$(RESET)"
+	@go build -o bin/neo4j_importer app/commands/neo4j_importer/main.go
 
 build_web_archive:
 	@echo "$(BLUE)Building $(GREEN)web_archive$(RESET)"

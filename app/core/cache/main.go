@@ -1,8 +1,9 @@
-package core
+package cache
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mgorunuch/microb/app/core"
 	"os"
 	"path/filepath"
 	"sort"
@@ -52,7 +53,7 @@ func (fc *FileCache[T]) getLatestCacheFile(key string) (string, error) {
 		if file.IsDir() {
 			continue
 		}
-		ts, err := ParseInt64(file.Name())
+		ts, err := core.ParseInt64(file.Name())
 		if err != nil {
 			continue
 		}
@@ -142,7 +143,7 @@ func (fc *FileCache[T]) CleanExpired() error {
 			return nil
 		}
 
-		ts, err := ParseInt64(info.Name())
+		ts, err := core.ParseInt64(info.Name())
 		if err != nil {
 			return nil
 		}
@@ -154,11 +155,4 @@ func (fc *FileCache[T]) CleanExpired() error {
 
 		return nil
 	})
-}
-
-// Helper function to parse int64 from string
-func ParseInt64(s string) (int64, error) {
-	var n int64
-	_, err := fmt.Sscanf(s, "%d", &n)
-	return n, err
 }

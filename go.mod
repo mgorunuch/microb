@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/fatih/color v1.18.0
 	github.com/joho/godotenv v1.5.1
+	github.com/neo4j/neo4j-go-driver/v5 v5.27.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/term v0.27.0
 )

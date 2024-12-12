@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
@@ -12,6 +13,37 @@ import (
 
 var loggerQuietFlag = flag.Bool("quiet", false, "Disable logging")
 var Logger = zaputils.InitLogger().Sugar()
+
+func Closer(f func() error) func() {
+	return func() {
+		err := f()
+		if err != nil {
+			Logger.Error(err)
+		}
+	}
+}
+
+func CtxCloser(ctx context.Context, f func(context.Context) error) func() {
+	return func() {
+		err := f(ctx)
+		if err != nil {
+			Logger.Error(err)
+		}
+	}
+}
+
+func FatalErr(err error) {
+	if err != nil {
+		Logger.Fatal(err)
+	}
+}
+
+func Fatal1Err[T any](v T, err error) T {
+	if err != nil {
+		Logger.Fatal(err)
+	}
+	return v
+}
 
 func init() {
 	flag.Parse()
