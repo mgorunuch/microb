@@ -132,6 +132,10 @@ var migrations = [][2]string{
 		-- Keep the url_id column in chrome_visits for the primary URL
 		`,
 	},
+	{
+		"Drop domains table",
+		`drop table if exists domains cascade;`,
+	},
 }
 
 func Migrate(ctx context.Context) error {
