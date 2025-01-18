@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -17,6 +18,21 @@ type UrlModel struct {
 	Query     string
 	Fragment  string
 	CreatedAt time.Time
+}
+
+func (m *UrlModel) CalcFromRaw(ctx context.Context) error {
+	u, err := url.Parse(m.Raw)
+	if err != nil {
+		return err
+	}
+
+	m.Hostname = u.Hostname()
+	m.Path = u.Path
+	m.Scheme = u.Scheme
+	m.Query = u.RawQuery
+	m.Fragment = u.Fragment
+
+	return nil
 }
 
 func (m *UrlModel) Create(ctx context.Context) error {

@@ -1,11 +1,13 @@
 package binary_edge
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mgorunuch/microb/app/core"
 	"net/http"
 	"net/url"
+
+	"github.com/mgorunuch/microb/app/core"
 )
 
 func BINARYEDGE_API_KEY() string {
@@ -20,7 +22,7 @@ type BinaryEdgeResponse struct {
 	Events   []string `json:"events"`
 }
 
-func Run(domain string) (res BinaryEdgeResponse, err error) {
+func Run(_ context.Context, domain string) (res BinaryEdgeResponse, err error) {
 	baseURL := "https://api.binaryedge.io/v2/query/domains/subdomain"
 	requestURL := fmt.Sprintf("%s/%s", baseURL, url.PathEscape(domain))
 	req, err := http.NewRequest("GET", requestURL, nil)

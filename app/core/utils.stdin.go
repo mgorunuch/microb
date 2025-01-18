@@ -2,6 +2,7 @@ package core
 
 import (
 	"bufio"
+	"context"
 	"os"
 	"sync"
 	"time"
@@ -41,10 +42,11 @@ func SpawnArrayElements[T any](ch chan T, arr []T) {
 type Config[T any] struct {
 	CacheProvider CacheProvider[T]
 	ThreadsCount  int
-	KeyFunc       func(string) (string, error)
-	RunFunc       func(string) (T, error)
+	KeyFunc       func(ctx context.Context, val string) (string, error)
+	RunFunc       func(ctx context.Context, val string) (T, error)
 	OutputFunc    func(T)
 	SleepTime     time.Duration
+	Ctx           context.Context
 }
 
 func ProcessLinesWithCache[T any](config Config[T]) {
@@ -54,7 +56,7 @@ func ProcessLinesWithCache[T any](config Config[T]) {
 			time.Sleep(config.SleepTime)
 		}()
 
-		key, err := config.KeyFunc(v)
+		key, err := config.KeyFunc(config.Ctx, v)
 		if err != nil {
 			Logger.Errorf("Error parsing key: %s", err.Error())
 			return
@@ -71,7 +73,7 @@ func ProcessLinesWithCache[T any](config Config[T]) {
 			return
 		}
 
-		response, err := config.RunFunc(key)
+		response, err := config.RunFunc(config.Ctx, key)
 		if err != nil {
 			Logger.Errorf("Error running: %s", err.Error())
 			return
@@ -89,9 +91,10 @@ func ProcessLinesWithCache[T any](config Config[T]) {
 }
 
 type SimpleConfig[T any] struct {
+	Ctx          context.Context
 	ThreadsCount int
-	KeyFunc      func(string) (string, error)
-	RunFunc      func(string) (T, error)
+	KeyFunc      func(ctx context.Context, val string) (string, error)
+	RunFunc      func(ctx context.Context, val string) (T, error)
 	OutputFunc   func(T)
 	SleepTime    time.Duration
 	Unique       bool
@@ -106,7 +109,7 @@ func ProcessLines[T any](config SimpleConfig[T]) {
 	}
 
 	if config.KeyFunc == nil {
-		config.KeyFunc = func(s string) (string, error) {
+		config.KeyFunc = func(_ context.Context, s string) (string, error) {
 			return s, nil
 		}
 	}
@@ -120,7 +123,7 @@ func ProcessLines[T any](config SimpleConfig[T]) {
 			time.Sleep(config.SleepTime)
 		}()
 
-		key, err := config.KeyFunc(v)
+		key, err := config.KeyFunc(config.Ctx, v)
 		if err != nil {
 			Logger.Errorf("Error parsing key: %s", err.Error())
 			return
@@ -133,7 +136,7 @@ func ProcessLines[T any](config SimpleConfig[T]) {
 			}
 		}
 
-		response, err := config.RunFunc(key)
+		response, err := config.RunFunc(config.Ctx, key)
 		if err != nil {
 			Logger.Errorf("Error running: %s", err.Error())
 			return

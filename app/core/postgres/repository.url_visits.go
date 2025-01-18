@@ -45,3 +45,13 @@ func (r *URLVisitRepository) GetByVisitId(ctx context.Context, visitId string) (
 		return builder.Where("visit_id = ?", visitId)
 	})
 }
+
+func (r *URLVisitRepository) UpsertRaw(ctx context.Context, urlId string, visitId string) error {
+	query := `
+		insert into url_visits (url_id, visit_id, created_at)
+		values ($1, $2, now())
+		on conflict (url_id, visit_id) do nothing
+	`
+	_, err := Pool.Exec(ctx, query, urlId, visitId)
+	return err
+}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/core/cache"
 	"github.com/mgorunuch/microb/app/engine/google_custom_search"
@@ -11,7 +13,7 @@ func main() {
 	core.ProcessLinesWithCache(core.Config[google_custom_search.GoogleCustomSearchResponse]{
 		CacheProvider: cache.NewDefaultFileCache[google_custom_search.GoogleCustomSearchResponse]("google_custom_search", core.YEAR),
 		ThreadsCount:  1,
-		KeyFunc: func(s string) (string, error) {
+		KeyFunc: func(_ context.Context, s string) (string, error) {
 			return s, nil
 		},
 		RunFunc: google_custom_search.Run,

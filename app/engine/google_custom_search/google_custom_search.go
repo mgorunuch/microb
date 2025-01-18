@@ -1,11 +1,13 @@
 package google_custom_search
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mgorunuch/microb/app/core"
 	"net/http"
 	"net/url"
+
+	"github.com/mgorunuch/microb/app/core"
 )
 
 func GOOGLE_CUSTOM_SEARCH_API() string {
@@ -25,7 +27,7 @@ type GoogleCustomSearchResponse struct {
 	} `json:"items"`
 }
 
-func Run(query string) (GoogleCustomSearchResponse, error) {
+func Run(_ context.Context, query string) (GoogleCustomSearchResponse, error) {
 	googleCustomSearchApiKey := GOOGLE_CUSTOM_SEARCH_API()
 	googleCustomSearchEngineId := GOOGLE_CUSTOM_SEARCH_ENGINE_ID()
 

@@ -1,6 +1,7 @@
 package alienvault_passivedns
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,7 +21,7 @@ type PassiveDnsResp struct {
 
 // Get retrieves passive DNS information for a hostname using the cache provider
 // If the data is not in cache, it will fetch from the AlienVault API
-func Get(hostname string) (res PassiveDnsResp, err error) {
+func Get(_ context.Context, hostname string) (res PassiveDnsResp, err error) {
 	url := fmt.Sprintf("https://otx.alienvault.com/api/v1/indicators/domain/%s/passive_dns", hostname)
 
 	response, err := http.Get(url)

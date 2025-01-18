@@ -45,6 +45,21 @@ var UrlRepo = &UrlRepository{
 	},
 }
 
+func (r *UrlRepository) UpsertByRaw(ctx context.Context, raw string) (*UrlModel, error) {
+	model, err := r.GetByRaw(ctx, raw)
+	if err == nil {
+		return nil, err
+	}
+
+	model = &UrlModel{Raw: raw}
+	err = model.CalcFromRaw(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return model, model.Create(ctx)
+}
+
 func (r *UrlRepository) GetById(ctx context.Context, id string) (*UrlModel, error) {
 	return r.Select(ctx, func(builder sq.SelectBuilder) sq.SelectBuilder {
 		return builder.Where("id = ?", id)

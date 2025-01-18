@@ -1,13 +1,15 @@
 package commoncrawl
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mgorunuch/microb/app/core"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/mgorunuch/microb/app/core"
 )
 
 type CrawlData struct {
@@ -34,7 +36,7 @@ type LibList struct {
 	To       string `json:"to"`
 }
 
-func Get(domain string) ([]CrawlData, error) {
+func Get(_ context.Context, domain string) ([]CrawlData, error) {
 	var libList []LibList
 
 	// Load data from http://index.commoncrawl.org/collinfo.json

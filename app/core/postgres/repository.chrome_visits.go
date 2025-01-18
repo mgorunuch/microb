@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 )
@@ -54,5 +55,29 @@ func (r *ChromeVisitRepository) GetById(ctx context.Context, id string) (*Chrome
 func (r *ChromeVisitRepository) GetByUrlId(ctx context.Context, urlId string) ([]ChromeVisitModel, error) {
 	return r.SelectMultiple(ctx, func(builder sq.SelectBuilder) sq.SelectBuilder {
 		return builder.Where("url_id = ?", urlId)
+	})
+}
+
+func (r *ChromeVisitRepository) GetLastVisit(ctx context.Context, urlId string) (*ChromeVisitModel, error) {
+	return r.Select(ctx, func(builder sq.SelectBuilder) sq.SelectBuilder {
+		return builder.Where("url_id = ?", urlId).OrderBy("opened_at DESC").Limit(1)
+	})
+}
+
+func (r *ChromeVisitRepository) GetLastVisitAfter(ctx context.Context, urlId string, duration time.Duration) (*ChromeVisitModel, error) {
+	after := time.Now().Add(-duration)
+	return r.Select(ctx, func(builder sq.SelectBuilder) sq.SelectBuilder {
+		return builder.Where("url_id = ? and opened_at > ?", urlId, after).
+			OrderBy("opened_at desc").
+			Limit(1)
+	})
+}
+
+func (r *ChromeVisitRepository) GetLastVisitByURL(ctx context.Context, url string) (*ChromeVisitModel, error) {
+	return r.Select(ctx, func(builder sq.SelectBuilder) sq.SelectBuilder {
+		return builder.Join("urls url ON chrome_visits.url_id = urls.id").
+			Where("url.raw = ?", url).
+			OrderBy("opened_at DESC").
+			Limit(1)
 	})
 }

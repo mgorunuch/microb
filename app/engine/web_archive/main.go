@@ -2,6 +2,7 @@ package web_archive
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -9,7 +10,7 @@ import (
 // Get fetches the list of URLs from the web archive for the given domain
 // Logic: http://web.archive.org/cdx/search/cdx?url=*.{domain}/*&output=text&fl=original&collapse=urlkey
 // and returns them as a slice of strings.
-func Get(domain string) ([]string, error) {
+func Get(_ context.Context, domain string) ([]string, error) {
 	url := fmt.Sprintf("http://web.archive.org/cdx/search/cdx?url=*.%s/*&output=text&fl=original&collapse=urlkey", domain)
 	resp, err := http.Get(url)
 	if err != nil {

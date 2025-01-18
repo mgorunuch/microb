@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 
@@ -13,8 +14,8 @@ type DomainData struct {
 
 var uniqueFlag = flag.Bool("unique", true, "Only output unique domains")
 
-func extractDomain(url string) (*DomainData, error) {
-	domain, err := core.ParseUrlHostName(url)
+func extractDomain(ctx context.Context, url string) (*DomainData, error) {
+	domain, err := core.ParseUrlHostName(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +27,8 @@ func main() {
 	core.ProcessLines(core.SimpleConfig[*DomainData]{
 		ThreadsCount: 1,
 		KeyFunc:      core.ParseUrlHostName,
-		RunFunc: func(url string) (*DomainData, error) {
-			return extractDomain(url)
+		RunFunc: func(ctx context.Context, url string) (*DomainData, error) {
+			return extractDomain(ctx, url)
 		},
 		OutputFunc: func(data *DomainData) {
 			fmt.Println(data.Domain)

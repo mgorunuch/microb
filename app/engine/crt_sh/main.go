@@ -1,6 +1,7 @@
 package crt_sh
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -22,7 +23,7 @@ type CertData struct {
 
 // Get fetches the list of certificates from crt.sh for the given domain
 // and returns them as a slice of CertData.
-func Get(domain string) ([]CertData, error) {
+func Get(_ context.Context, domain string) ([]CertData, error) {
 	url := fmt.Sprintf("https://crt.sh/?q=*.%s&output=json", domain)
 	resp, err := http.Get(url)
 	if err != nil {

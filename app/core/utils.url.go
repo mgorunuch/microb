@@ -1,12 +1,13 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"strings"
 )
 
-func ParseUrlHostName(urlStr string) (string, error) {
+func ParseUrlHostName(_ context.Context, urlStr string) (string, error) {
 	urlStr = strings.Trim(urlStr, "\n \t")
 	urlStr = strings.TrimPrefix(urlStr, "http://")
 	urlStr = strings.TrimPrefix(urlStr, "https://")
