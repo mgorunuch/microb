@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"sync"
+	"time"
 )
 
 func ReadAllLines(processor func(string)) {
@@ -42,11 +43,17 @@ type Config[T any] struct {
 	ThreadsCount  int
 	KeyFunc       func(string) (string, error)
 	RunFunc       func(string) (T, error)
+	OutputFunc    func(T)
+	SleepTime     time.Duration
 }
 
 func ProcessLinesWithCache[T any](config Config[T]) {
 	var wg sync.WaitGroup
 	SpawnAllLines(RunParallel(&wg, config.ThreadsCount, func(v string) {
+		defer func() {
+			time.Sleep(config.SleepTime)
+		}()
+
 		key, err := config.KeyFunc(v)
 		if err != nil {
 			Logger.Errorf("Error parsing key: %s", err.Error())
@@ -74,6 +81,66 @@ func ProcessLinesWithCache[T any](config Config[T]) {
 		if err != nil {
 			Logger.Errorf("Error adding to cache: %s", err.Error())
 			return
+		}
+
+		Logger.Debugf("Successfully processed: %s", key)
+	}))
+	wg.Wait()
+}
+
+type SimpleConfig[T any] struct {
+	ThreadsCount int
+	KeyFunc      func(string) (string, error)
+	RunFunc      func(string) (T, error)
+	OutputFunc   func(T)
+	SleepTime    time.Duration
+	Unique       bool
+}
+
+func ProcessLines[T any](config SimpleConfig[T]) {
+	var wg sync.WaitGroup
+	var uniqueKeys sync.Map
+
+	if config.ThreadsCount == 0 {
+		config.ThreadsCount = 10
+	}
+
+	if config.KeyFunc == nil {
+		config.KeyFunc = func(s string) (string, error) {
+			return s, nil
+		}
+	}
+
+	if config.SleepTime == 0 {
+		config.SleepTime = 10 * time.Millisecond
+	}
+
+	SpawnAllLines(RunParallel(&wg, config.ThreadsCount, func(v string) {
+		defer func() {
+			time.Sleep(config.SleepTime)
+		}()
+
+		key, err := config.KeyFunc(v)
+		if err != nil {
+			Logger.Errorf("Error parsing key: %s", err.Error())
+			return
+		}
+
+		if config.Unique {
+			if _, exists := uniqueKeys.LoadOrStore(key, struct{}{}); exists {
+				Logger.Debugf("Skipping duplicate key: %s", key)
+				return
+			}
+		}
+
+		response, err := config.RunFunc(key)
+		if err != nil {
+			Logger.Errorf("Error running: %s", err.Error())
+			return
+		}
+
+		if config.OutputFunc != nil {
+			config.OutputFunc(response)
 		}
 
 		Logger.Debugf("Successfully processed: %s", key)

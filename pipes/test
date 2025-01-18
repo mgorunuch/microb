@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Exit on any error
+set -e
+
+# Check if yq is installed
+if ! command -v yq &> /dev/null; then
+    echo "Error: yq is not installed. Please install it first." >&2
+    echo "For Mac: brew install yq" >&2
+    exit 1
+fi
+
+# Check if the YAML file exists
+yaml_file="./mock/data.yaml"
+if [ ! -f "$yaml_file" ]; then
+    echo "Error: $yaml_file not found" >&2
+    exit 1
+fi
+
+# Extract unique search terms and output to stdout
+yq '.us_ecommerce_categories.*.search_terms[]' "$yaml_file" | sort -u

@@ -4,14 +4,18 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
 	"github.com/fatih/color"
 	"github.com/mgorunuch/microb/app/core/zaputils"
 	"golang.org/x/term"
-	"os"
-	"strings"
 )
 
-var loggerQuietFlag = flag.Bool("quiet", false, "Disable logging")
+var loggerQuietFlag = flag.Bool("q", false, "Disable logging")
 var Logger = zaputils.InitLogger().Sugar()
 
 func Closer(f func() error) func() {
@@ -45,13 +49,17 @@ func Fatal1Err[T any](v T, err error) T {
 	return v
 }
 
-func init() {
-	flag.Parse()
-}
-
 func LoggerInit() {
 	if *loggerQuietFlag {
 		color.NoColor = true
+		Logger = zaputils.InitLogger().Sugar().WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+			return zapcore.NewCore(
+				zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+				zapcore.AddSync(os.Stderr),
+				zapcore.ErrorLevel,
+			)
+		}))
+		return
 	} else {
 		PrintLogo()
 	}

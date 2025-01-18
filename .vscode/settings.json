@@ -1,0 +1,6 @@
+{
+    "makefile.configureOnOpen": false,
+    "editor.fontFamily": "'JetBrains Mono', Consolas, 'Courier New', monospace",
+    "editor.tabSize": 2,
+    "workbench.colorTheme": "Jetbrains Fleet"
+}

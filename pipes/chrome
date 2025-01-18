@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Convert search terms to Google search URLs
+while IFS= read -r term; do
+    # Skip empty lines
+    if [ -z "$term" ]; then
+        continue
+    fi
+    
+    # URL encode the search term and create Google search URL
+    encoded_term=$(echo "$term" | sed 's/ /+/g')
+    echo "https://www.google.com/search?q=$encoded_term"
+done

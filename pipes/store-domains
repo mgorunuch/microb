@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# This pipeline will:
+# 1. Read domains from mock/domains.txt
+# 2. Extract domains using extract_domains command
+# 3. Pipe the results to store_domains to save them
+cat mock/domains.txt | bin/extract_domains -q | bin/store_domains -reason="test import" 

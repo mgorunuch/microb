@@ -4,6 +4,7 @@ import (
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/core/cache"
 	"github.com/mgorunuch/microb/app/engine/commoncrawl"
+	"time"
 )
 
 func main() {
@@ -13,5 +14,6 @@ func main() {
 		ThreadsCount:  1,
 		KeyFunc:       core.ParseUrlHostName,
 		RunFunc:       commoncrawl.Get,
+		SleepTime:     time.Second * 1,
 	})
 }

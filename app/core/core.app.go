@@ -1,11 +1,15 @@
 package core
 
 import (
-	"github.com/joho/godotenv"
+	"flag"
 	"log"
+
+	"github.com/joho/godotenv"
 )
 
 func Init() {
+	flag.Parse()
+
 	LoggerInit()
 
 	// Load environment variables from .env file

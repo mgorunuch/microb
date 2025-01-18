@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Test URLs
+echo "https://www.temu.com/" | go run app/commands/open_chrome/main.go

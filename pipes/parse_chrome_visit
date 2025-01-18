@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Configuration
+VISIT_ID="63773331-060e-4cfd-9d50-987f19564c68"
+URL_PREFIX="https://www.temu.com"
+
+# Build required binaries
+echo "Building required tools..."
+make build_chrome_visit_html build_link_extractor build_unique_lines store_links
+
+# Process pipeline:
+# 1. Get HTML content for the visit
+# 2. Extract links from HTML
+# 3. Remove duplicate links
+# 4. Store unique links back to visit
+echo "Processing visit $VISIT_ID..."
+echo "$VISIT_ID" | \
+  ./bin/chrome_visit_html | \
+  ./bin/link_extractor -prefix="$URL_PREFIX" | \
+  ./bin/unique_lines | \
+  ./bin/store_links -visit="$VISIT_ID" -reason=pipe:parse_chrome_visit:$VISIT_ID

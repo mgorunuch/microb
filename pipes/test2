@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+while IFS= read -r term; do
+    clean_term=$(echo "$term" | tr -cd '[:alnum:] -')
+    cache_dir="cache/google_custom_search/$clean_term"
+    
+    echo "Processing term: $term" >&2
+    echo "Cache directory: $cache_dir" >&2
+    
+    if ls $cache_dir/* >/dev/null 2>&1; then
+        for cache_file in $cache_dir/*; do
+            yq '.items[].link' "$cache_file" 2>/dev/null || true
+        done
+    else
+        echo "No cached results found for: $term" >&2
+    fi
+    echo "$term"
+done

@@ -4,6 +4,7 @@ import (
 	"github.com/mgorunuch/microb/app/core"
 	"github.com/mgorunuch/microb/app/core/cache"
 	"github.com/mgorunuch/microb/app/engine/certspotter"
+	"time"
 )
 
 func main() {
@@ -13,5 +14,6 @@ func main() {
 		ThreadsCount:  1,
 		KeyFunc:       core.ParseUrlHostName,
 		RunFunc:       certspotter.Get,
+		SleepTime:     time.Second * 5,
 	})
 }

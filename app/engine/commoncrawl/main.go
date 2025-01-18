@@ -57,6 +57,11 @@ func Get(domain string) ([]CrawlData, error) {
 		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
 
+	// Limit lib list to 10
+	if len(libList) > 10 {
+		libList = libList[:10]
+	}
+
 	var mx sync.Mutex
 	var allCrawlData []CrawlData
 
